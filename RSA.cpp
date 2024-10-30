@@ -226,8 +226,8 @@ std::string decryptMessage(const std::vector<BigInt>& encryptedChunks, const Big
 }
 
 int main() {
-    std::string p = "3557";
-    std::string q = "2579";
+    std::string p = "11";
+    std::string q = "3";
     BigInt n = multiplyStrings(p, q);
     BigInt phi = euler(p, q);
     BigInt e = BigInt("3");
@@ -241,7 +241,7 @@ int main() {
     BigInt d = (k * phi + BigInt("1")) / e;
 
     
-    std::string message = "40";
+    std::string message = "hello";
     std::cout << "Original message: " << message << std::endl;
 
     
@@ -251,8 +251,6 @@ int main() {
         std::cout << chunk.to_string() << " ";
     }
     std::cout << std::endl;
-
-   
     std::string decryptedMessage = decryptMessage(encryptedMessage, d, n);
     std::cout << "Decrypted message: " << decryptedMessage << std::endl;
 
