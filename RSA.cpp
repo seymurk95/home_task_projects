@@ -114,6 +114,10 @@ public:
         return current;
     }
 
+     BigInt& operator%=(const BigInt& other) {
+        *this = *this % other; 
+        return *this;}
+
     bool operator<(const BigInt& other) const {
         if (digits.size() != other.digits.size())
             return digits.size() < other.digits.size();
@@ -150,12 +154,12 @@ private:
 std::string textToNumericString(const std::string& text) {
     std::ostringstream oss;
     for (char c : text) {
-        oss << std::setw(3) << std::setfill('0') << int(c); // Convert ASCII to 3-digit values
+        oss << std::setw(3) << std::setfill('0') << int(c); 
     }
     return oss.str();
 }
 
-// Converts a numeric string back to the original message
+
 std::string numericStringToText(const std::string& numStr) {
     std::string text;
     for (size_t i = 0; i < numStr.length(); i += 3) {
@@ -185,22 +189,15 @@ std::string euler(const std::string& a, const std::string& b) {
 }
 
 
-BigInt mod_pow(const BigInt& base, const BigInt& exponent, const BigInt& modulus) {
+ BigInt mod_pow(BigInt a, BigInt n, BigInt m) {
     BigInt result("1");
-    BigInt base_copy = base % modulus;
-    BigInt exp_copy = exponent;
-
-    static const BigInt TWO("2");
-    static const BigInt ONE("1");
-
-    while (exp_copy != BigInt("0")) {
-        if ((exp_copy % TWO) == ONE) {  
-            result = (result * base_copy) % modulus;
-        }
-        base_copy = (base_copy * base_copy) % modulus;
-        exp_copy = exp_copy / TWO;  
+    a %= m;  
+    while (n > BigInt("0")) {
+        if (n % BigInt("2") == BigInt("1"))  
+            result = (result * a) % m;
+        a = (a * a) % m; 
+        n = n / BigInt("2");
     }
-
     return result;
 }
 
@@ -208,12 +205,12 @@ std::vector<BigInt> encryptMessage(const std::string& message, const BigInt& e, 
     std::string numericMessage = textToNumericString(message);
     std::vector<BigInt> encryptedChunks;
 
-    // Divide numericMessage into chunks that are less than n
-    size_t chunkSize = n.to_string().size() - 1; // Determine appropriate chunk size
+    
+    size_t chunkSize = n.to_string().size() - 1; 
     for (size_t i = 0; i < numericMessage.size(); i += chunkSize) {
         std::string chunk = numericMessage.substr(i, chunkSize);
         BigInt chunkBigInt(chunk);
-        encryptedChunks.push_back(mod_pow(chunkBigInt, e, n)); // Encrypt chunk
+        encryptedChunks.push_back(mod_pow(chunkBigInt, e, n)); 
     }
     return encryptedChunks;
 }
@@ -222,10 +219,10 @@ std::string decryptMessage(const std::vector<BigInt>& encryptedChunks, const Big
     std::string decryptedNumericMessage;
 
     for (const BigInt& encryptedChunk : encryptedChunks) {
-        BigInt decryptedChunk = mod_pow(encryptedChunk, d, n); // Decrypt chunk
+        BigInt decryptedChunk = mod_pow(encryptedChunk, d, n); 
         decryptedNumericMessage += decryptedChunk.to_string();
     }
-    return numericStringToText(decryptedNumericMessage); // Convert back to text
+    return numericStringToText(decryptedNumericMessage); 
 }
 
 int main() {
@@ -237,13 +234,14 @@ int main() {
     BigInt k = BigInt("1");
 
     
-    while (((k * phi + BigInt("1")) % e) != BigInt("0")) {
+    while (((k * phi + BigInt("1")) % e) != BigInt("0")) 
+    {
         k = k + BigInt("1");
     }
     BigInt d = (k * phi + BigInt("1")) / e;
 
     
-    std::string message = "hello world";
+    std::string message = "40";
     std::cout << "Original message: " << message << std::endl;
 
     
